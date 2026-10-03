@@ -29,7 +29,7 @@ export function createDefaultDesk(): DeskState {
         y: 72,
         z: 8,
         size: "comfortable",
-        place: "Harbor City",
+        place: "Houston, TX",
       },
       {
         id: "seed-quote",
