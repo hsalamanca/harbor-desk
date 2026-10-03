@@ -56,7 +56,7 @@ function createModule(
         ],
       };
     case "weather":
-      return { ...base, type, place: "Harbor City" };
+      return { ...base, type, place: "Houston, TX" };
     case "calendar":
       return { ...base, type };
     case "folders":
