@@ -116,8 +116,8 @@ export function ModuleShell({
       className={`module-plane flex flex-col ${
         stacked ? "module-stacked" : "absolute"
       } ${module.type === "now" ? "module-now" : ""} ${
-        lifting ? "module-lifting" : ""
-      }`}
+        module.type === "weather" ? "module-weather" : ""
+      } ${lifting ? "module-lifting" : ""}`}
       style={style}
     >
       <div
