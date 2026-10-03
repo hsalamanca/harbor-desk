@@ -15,8 +15,13 @@ describe("fetchWeatherForPlace (live Open-Meteo)", () => {
     assert.ok(weather.latitude > 29 && weather.latitude < 31);
     assert.ok(weather.longitude > -96 && weather.longitude < -94);
     assert.ok(Number.isFinite(weather.tempF));
+    assert.ok(Number.isFinite(weather.feelsLikeF));
     assert.ok(weather.condition.length > 0);
+    assert.ok(weather.feel.length > 0);
     assert.ok(weather.humidity >= 0 && weather.humidity <= 100);
+    assert.ok(Array.isArray(weather.hourly));
+    assert.ok(weather.hourly.length >= 3);
+    assert.ok(weather.hourly[0].hourLabel.length > 0);
   });
 
   it("resolves city-only Seattle", async () => {
