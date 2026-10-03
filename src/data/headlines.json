@@ -1,0 +1,44 @@
+[
+  {
+    "id": "h1",
+    "title": "Harbor fog lifts as ferry traffic returns to morning cadence",
+    "source": "Coastal Dispatch",
+    "url": "https://example.com/harbor-fog",
+    "publishedAt": "2026-10-03T06:12:00.000Z"
+  },
+  {
+    "id": "h2",
+    "title": "New open-source toolkit cuts local-first note sync to under a second",
+    "source": "Dev Tide",
+    "url": "https://example.com/local-first",
+    "publishedAt": "2026-10-03T05:40:00.000Z"
+  },
+  {
+    "id": "h3",
+    "title": "City council approves quieter waterfront lighting for blue hour walks",
+    "source": "Municipal Brief",
+    "url": "https://example.com/waterfront-light",
+    "publishedAt": "2026-10-02T22:15:00.000Z"
+  },
+  {
+    "id": "h4",
+    "title": "Researchers map how soft-grid layouts reduce decision fatigue",
+    "source": "Interface Weekly",
+    "url": "https://example.com/soft-grid",
+    "publishedAt": "2026-10-02T18:05:00.000Z"
+  },
+  {
+    "id": "h5",
+    "title": "Sea-glass ceramics trend returns in small-batch studio drops",
+    "source": "Studio Notes",
+    "url": "https://example.com/sea-glass",
+    "publishedAt": "2026-10-02T14:30:00.000Z"
+  },
+  {
+    "id": "h6",
+    "title": "Browser makers revisit new-tab pages as personal workspaces",
+    "source": "Tab & Cursor",
+    "url": "https://example.com/new-tab",
+    "publishedAt": "2026-10-02T11:00:00.000Z"
+  }
+]
