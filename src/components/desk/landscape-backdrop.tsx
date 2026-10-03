@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from "react";
 import {
-  HOURLY_LANDSCAPES,
+  ALL_LANDSCAPES,
   preloadLandscape,
+  sceneById,
   sceneForHour,
   type LandscapeScene,
 } from "@/lib/landscapes";
+import type { LandscapeMode } from "@/lib/types";
 
 function hourFromLocation(): number | null {
   if (typeof window === "undefined") return null;
@@ -17,27 +19,36 @@ function hourFromLocation(): number | null {
   return ((Math.floor(n) % 24) + 24) % 24;
 }
 
-export function LandscapeBackdrop() {
-  const [scene, setScene] = useState<LandscapeScene>(() =>
-    sceneForHour(hourFromLocation() ?? new Date().getHours())
-  );
+export function LandscapeBackdrop({
+  mode = "auto",
+  sceneId = null,
+}: {
+  mode?: LandscapeMode;
+  sceneId?: string | null;
+}) {
+  const resolve = (): LandscapeScene => {
+    if (mode === "manual") {
+      return sceneById(sceneId) ?? sceneForHour(new Date().getHours());
+    }
+    return sceneForHour(hourFromLocation() ?? new Date().getHours());
+  };
+
+  const [scene, setScene] = useState<LandscapeScene>(resolve);
   const [prev, setPrev] = useState<LandscapeScene | null>(null);
   const [fading, setFading] = useState(false);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    // Warm the full hourly set so hour flips stay smooth.
-    HOURLY_LANDSCAPES.forEach((s) => preloadLandscape(s.src));
+    ALL_LANDSCAPES.forEach((s) => preloadLandscape(s.src));
   }, []);
 
   useEffect(() => {
-    const tick = () => {
-      const forced = hourFromLocation();
-      const next = sceneForHour(forced ?? new Date().getHours());
+    const apply = (next: LandscapeScene) => {
       setScene((current) => {
         if (current.id === next.id) return current;
         setPrev(current);
         setFading(true);
+        setReady(false);
         window.setTimeout(() => {
           setPrev(null);
           setFading(false);
@@ -46,10 +57,16 @@ export function LandscapeBackdrop() {
       });
     };
 
-    tick();
-    const id = window.setInterval(tick, 30_000);
+    apply(resolve());
+
+    if (mode === "manual") return;
+
+    const id = window.setInterval(() => {
+      apply(sceneForHour(hourFromLocation() ?? new Date().getHours()));
+    }, 30_000);
     return () => window.clearInterval(id);
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, sceneId]);
 
   return (
     <div className="landscape-root" aria-hidden>
@@ -67,6 +84,7 @@ export function LandscapeBackdrop() {
         }`}
         style={{ backgroundImage: `url(${scene.src})` }}
       >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={scene.src}
           alt=""
@@ -76,7 +94,11 @@ export function LandscapeBackdrop() {
         <div className="landscape-wash" style={{ background: scene.wash }} />
       </div>
       <div className="landscape-vignette" />
-      <p className="landscape-caption">{scene.label}</p>
+      <p className="landscape-caption">
+        {scene.label}
+        {mode === "manual" ? " · pinned" : ""}
+        {scene.pack === "premium" ? " · suite" : ""}
+      </p>
     </div>
   );
 }

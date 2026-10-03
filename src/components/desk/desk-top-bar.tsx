@@ -1,6 +1,6 @@
 "use client";
 
-import { Plus } from "lucide-react";
+import { ImageIcon, LayoutTemplate, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function DeskTopBar({
@@ -8,20 +8,42 @@ export function DeskTopBar({
   onToggleArrange,
   onAdd,
   showAdd,
+  onOpenLandscapes,
+  onOpenPresets,
 }: {
   arrangeMode: boolean;
   onToggleArrange: () => void;
   onAdd: () => void;
   showAdd: boolean;
+  onOpenLandscapes: () => void;
+  onOpenPresets: () => void;
 }) {
   return (
-    <header className="pointer-events-none absolute inset-x-0 top-0 z-50 flex items-center justify-between px-5 py-4 sm:px-8">
+    <header className="pointer-events-none absolute inset-x-0 top-0 z-50 flex items-center justify-between gap-3 px-5 py-4 sm:px-8">
       <div className="pointer-events-auto">
         <p className="brand-mark font-display text-xl tracking-tight sm:text-2xl">
           Harbor Desk
         </p>
       </div>
-      <div className="pointer-events-auto flex items-center gap-2">
+      <div className="pointer-events-auto flex flex-wrap items-center justify-end gap-2">
+        <Button
+          size="sm"
+          variant="secondary"
+          onClick={onOpenLandscapes}
+          className="desk-chrome-quiet gap-1.5 border-0 hover:bg-white/15"
+        >
+          <ImageIcon className="size-3.5" />
+          <span className="hidden sm:inline">Scenes</span>
+        </Button>
+        <Button
+          size="sm"
+          variant="secondary"
+          onClick={onOpenPresets}
+          className="desk-chrome-quiet gap-1.5 border-0 hover:bg-white/15"
+        >
+          <LayoutTemplate className="size-3.5" />
+          <span className="hidden sm:inline">Presets</span>
+        </Button>
         {showAdd && (
           <Button
             size="sm"

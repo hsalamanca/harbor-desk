@@ -2,10 +2,14 @@
 
 import type { ReactNode } from "react";
 import {
+  CalendarDays,
+  CloudSun,
   Clock3,
+  FolderOpen,
   Link2,
   ListTodo,
   Newspaper,
+  Quote,
   StickyNote,
 } from "lucide-react";
 import {
@@ -15,6 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { isProSuiteModule } from "@/lib/pro-suite";
 import { MODULE_LABELS, type ModuleType } from "@/lib/types";
 
 const OPTIONS: Array<{
@@ -47,6 +52,26 @@ const OPTIONS: Array<{
     blurb: "A tiny checklist of 3–5 personal tasks.",
     icon: <ListTodo className="size-5" />,
   },
+  {
+    type: "weather",
+    blurb: "Calm local conditions for the harbor mood.",
+    icon: <CloudSun className="size-5" />,
+  },
+  {
+    type: "calendar",
+    blurb: "Today’s agenda at a glance.",
+    icon: <CalendarDays className="size-5" />,
+  },
+  {
+    type: "folders",
+    blurb: "Grouped quick links in tidy folders.",
+    icon: <FolderOpen className="size-5" />,
+  },
+  {
+    type: "quote",
+    blurb: "A short line of inspiration for the day.",
+    icon: <Quote className="size-5" />,
+  },
 ];
 
 export function AddModuleDialog({
@@ -60,13 +85,13 @@ export function AddModuleDialog({
 }) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="border-0 bg-[var(--harbor-surface)] sm:max-w-md">
+      <DialogContent className="max-h-[85vh] overflow-auto border-0 bg-[var(--harbor-surface)] sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-display text-xl text-[var(--harbor-ink)]">
             Add module
           </DialogTitle>
           <DialogDescription className="text-[var(--harbor-ink-muted)]">
-            Drop something useful onto the desk.
+            Core desk pieces and Harbor Suite — all unlocked.
           </DialogDescription>
         </DialogHeader>
         <ul className="mt-2 grid gap-2">
@@ -84,8 +109,13 @@ export function AddModuleDialog({
                   {opt.icon}
                 </span>
                 <span>
-                  <span className="block text-sm font-medium text-[var(--harbor-ink)]">
+                  <span className="flex items-center gap-2 text-sm font-medium text-[var(--harbor-ink)]">
                     {MODULE_LABELS[opt.type]}
+                    {isProSuiteModule(opt.type) && (
+                      <span className="rounded-md bg-[var(--harbor-teal)]/12 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-[var(--harbor-teal-deep)]">
+                        Suite
+                      </span>
+                    )}
                   </span>
                   <span className="mt-0.5 block text-xs text-[var(--harbor-ink-muted)]">
                     {opt.blurb}

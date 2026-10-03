@@ -5,7 +5,9 @@ import { AddModuleDialog } from "@/components/desk/add-module-dialog";
 import { DeskTopBar } from "@/components/desk/desk-top-bar";
 import { EmptyDesk } from "@/components/desk/empty-desk";
 import { LandscapeBackdrop } from "@/components/desk/landscape-backdrop";
+import { LandscapePicker } from "@/components/desk/landscape-picker";
 import { ModuleShell } from "@/components/desk/module-shell";
+import { PresetsDialog } from "@/components/desk/presets-dialog";
 import { SoftGrid } from "@/components/desk/soft-grid";
 import { useDeskState } from "@/hooks/use-desk-state";
 import type { DeskModule, ModuleType } from "@/lib/types";
@@ -16,14 +18,20 @@ export function DeskCanvas() {
     hydrated,
     storageError,
     setArrangeMode,
+    setLandscapeMode,
+    setLandscapeSceneId,
     addModule,
     removeModule,
     bringToFront,
     moveModule,
     cycleSize,
     patchModule,
+    replaceDesk,
+    resetToDefault,
   } = useDeskState();
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [scenesOpen, setScenesOpen] = useState(false);
+  const [presetsOpen, setPresetsOpen] = useState(false);
   const [dragging, setDragging] = useState(false);
 
   if (!hydrated || !state) {
@@ -53,7 +61,10 @@ export function DeskCanvas() {
 
   return (
     <div className="harbor-root relative min-h-dvh overflow-hidden">
-      <LandscapeBackdrop />
+      <LandscapeBackdrop
+        mode={state.landscapeMode}
+        sceneId={state.landscapeSceneId}
+      />
       <SoftGrid visible={state.arrangeMode || dragging} />
 
       <DeskTopBar
@@ -61,6 +72,8 @@ export function DeskCanvas() {
         onToggleArrange={() => setArrangeMode(!state.arrangeMode)}
         onAdd={openPicker}
         showAdd={state.arrangeMode}
+        onOpenLandscapes={() => setScenesOpen(true)}
+        onOpenPresets={() => setPresetsOpen(true)}
       />
 
       {storageError && (
@@ -100,6 +113,21 @@ export function DeskCanvas() {
         open={pickerOpen}
         onOpenChange={setPickerOpen}
         onPick={handlePick}
+      />
+      <LandscapePicker
+        open={scenesOpen}
+        onOpenChange={setScenesOpen}
+        mode={state.landscapeMode}
+        sceneId={state.landscapeSceneId}
+        onSelectAuto={() => setLandscapeMode("auto")}
+        onSelectScene={(id) => setLandscapeSceneId(id)}
+      />
+      <PresetsDialog
+        open={presetsOpen}
+        onOpenChange={setPresetsOpen}
+        state={state}
+        onImport={replaceDesk}
+        onReset={resetToDefault}
       />
     </div>
   );
