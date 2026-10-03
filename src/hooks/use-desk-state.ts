@@ -10,6 +10,7 @@ import {
 import type {
   DeskModule,
   DeskState,
+  LandscapeMode,
   ModuleType,
   SizePreset,
 } from "@/lib/types";
@@ -54,6 +55,26 @@ function createModule(
           { id: uid(), text: "Ship something small", done: false },
         ],
       };
+    case "weather":
+      return { ...base, type, place: "Harbor City" };
+    case "calendar":
+      return { ...base, type };
+    case "folders":
+      return {
+        ...base,
+        type,
+        folders: [
+          {
+            id: uid(),
+            name: "Work",
+            links: [
+              { id: uid(), label: "Linear", url: "https://linear.app" },
+            ],
+          },
+        ],
+      };
+    case "quote":
+      return { ...base, type, size: "compact" };
   }
 }
 
@@ -83,9 +104,39 @@ export function useDeskState() {
     setState((prev) => (prev ? fn(prev) : prev));
   }, []);
 
+  const replaceDesk = useCallback((next: DeskState) => {
+    skipSave.current = false;
+    setState(next);
+  }, []);
+
   const setArrangeMode = useCallback(
     (arrangeMode: boolean) => {
       update((prev) => ({ ...prev, arrangeMode }));
+    },
+    [update]
+  );
+
+  const setLandscapeMode = useCallback(
+    (landscapeMode: LandscapeMode, landscapeSceneId?: string | null) => {
+      update((prev) => ({
+        ...prev,
+        landscapeMode,
+        landscapeSceneId:
+          landscapeMode === "manual"
+            ? landscapeSceneId ?? prev.landscapeSceneId
+            : null,
+      }));
+    },
+    [update]
+  );
+
+  const setLandscapeSceneId = useCallback(
+    (landscapeSceneId: string) => {
+      update((prev) => ({
+        ...prev,
+        landscapeMode: "manual",
+        landscapeSceneId,
+      }));
     },
     [update]
   );
@@ -189,16 +240,24 @@ export function useDeskState() {
     [update]
   );
 
+  const resetToDefault = useCallback(() => {
+    replaceDesk(createDefaultDesk());
+  }, [replaceDesk]);
+
   return {
     state,
     hydrated,
     storageError,
     setArrangeMode,
+    setLandscapeMode,
+    setLandscapeSceneId,
     addModule,
     removeModule,
     bringToFront,
     moveModule,
     cycleSize,
     patchModule,
+    replaceDesk,
+    resetToDefault,
   };
 }
