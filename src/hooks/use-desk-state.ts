@@ -211,6 +211,33 @@ export function useDeskState() {
     [update]
   );
 
+  /** Swap stack/reading order on mobile by exchanging positions with a neighbor. */
+  const reorderModule = useCallback(
+    (id: string, direction: -1 | 1) => {
+      update((prev) => {
+        const sorted = [...prev.modules].sort(
+          (a, b) => a.y - b.y || a.x - b.x || a.z - b.z
+        );
+        const index = sorted.findIndex((m) => m.id === id);
+        const swapWith = index + direction;
+        if (index < 0 || swapWith < 0 || swapWith >= sorted.length) {
+          return prev;
+        }
+        const a = sorted[index];
+        const b = sorted[swapWith];
+        return {
+          ...prev,
+          modules: prev.modules.map((m) => {
+            if (m.id === a.id) return { ...m, x: b.x, y: b.y };
+            if (m.id === b.id) return { ...m, x: a.x, y: a.y };
+            return m;
+          }),
+        };
+      });
+    },
+    [update]
+  );
+
   const cycleSize = useCallback(
     (id: string) => {
       update((prev) => ({
@@ -255,6 +282,7 @@ export function useDeskState() {
     removeModule,
     bringToFront,
     moveModule,
+    reorderModule,
     cycleSize,
     patchModule,
     replaceDesk,
