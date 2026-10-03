@@ -143,7 +143,7 @@ export function WeatherModuleView({
         const message =
           "error" in body && body.message
             ? body.message
-            : "Weather couldn\u2019t load.";
+            : "Weather couldn’t load.";
         setErrorMessage(message);
         if (!hasDataRef.current) setStatus("error");
         else setStatus("ready");
@@ -160,7 +160,7 @@ export function WeatherModuleView({
       setStatus("ready");
     } catch {
       if (id !== requestId.current) return;
-      setErrorMessage("Weather couldn\u2019t load.");
+      setErrorMessage("Weather couldn’t load.");
       if (!hasDataRef.current) setStatus("error");
     } finally {
       if (id === requestId.current) setRefreshing(false);
@@ -199,7 +199,7 @@ export function WeatherModuleView({
       <div className="weather-shell weather-atm-cloud flex h-full flex-col justify-between gap-3 p-1">
         <div className="space-y-2">
           <p className="text-sm text-[var(--harbor-ink-muted)]">
-            {errorMessage || "Weather couldn\u2019t load."}
+            {errorMessage || "Weather couldn’t load."}
           </p>
           <PlaceField
             value={draftPlace}
@@ -241,13 +241,13 @@ export function WeatherModuleView({
             }`}
           >
             {data!.tempF}
-            <span className="weather-temp-degree">\u00b0</span>
+            <span className="weather-temp-degree">°</span>
           </p>
           <p className="mt-0.5 text-[0.92rem] font-medium tracking-[-0.01em] text-[var(--harbor-ink)]">
             {data!.condition}
           </p>
           <p className="mt-1 text-[11px] tracking-[0.02em] text-[var(--harbor-ink-muted)]">
-            {data!.feel || `Feels like ${feels}\u00b0`}
+            {data!.feel || `Feels like ${feels}°`}
             {refreshing && (
               <span className="ml-2 text-[10px] uppercase tracking-[0.14em]">
                 updating
@@ -273,7 +273,7 @@ export function WeatherModuleView({
                 icon={slot.icon}
                 className="size-3.5 text-[var(--harbor-teal-deep)]"
               />
-              <span className="weather-hour-temp">{slot.tempF}\u00b0</span>
+              <span className="weather-hour-temp">{slot.tempF}°</span>
             </div>
           ))}
         </div>
@@ -307,7 +307,7 @@ export function WeatherModuleView({
               {data!.humidity}%
             </span>
             <span className="weather-chip weather-chip-quiet">
-              feels {feels}\u00b0
+              feels {feels}°
             </span>
           </div>
         )}
