@@ -42,7 +42,7 @@ export function cacheKeyForPlace(place: string): string {
   return parsePlace(place).raw.toLowerCase();
 }
 
-/** Test helper \u2014 clears the short-lived in-memory cache. */
+/** Test helper — clears the short-lived in-memory cache. */
 export function clearWeatherCache(): void {
   cache.clear();
 }
