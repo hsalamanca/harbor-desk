@@ -13,6 +13,7 @@ import {
 import { Input } from "@/components/ui/input";
 import type { ShortcutItem, ShortcutsModule } from "@/lib/types";
 import { SIZE_PRESETS } from "@/lib/types";
+import { useMobileDesk } from "@/hooks/use-media-query";
 
 function faviconUrl(url: string): string | null {
   try {
@@ -23,7 +24,8 @@ function faviconUrl(url: string): string | null {
   }
 }
 
-function colsForSize(size: ShortcutsModule["size"]): number {
+function colsForSize(size: ShortcutsModule["size"], mobile: boolean): number {
+  if (mobile) return size === "compact" ? 2 : 3;
   if (size === "wide") return 4;
   if (size === "comfortable") return 3;
   return 2;
@@ -38,10 +40,11 @@ export function ShortcutsModuleView({
   arrangeMode: boolean;
   onChangeItems: (items: ShortcutItem[]) => void;
 }) {
+  const mobile = useMobileDesk();
   const [editing, setEditing] = useState<ShortcutItem | null>(null);
   const [draftLabel, setDraftLabel] = useState("");
   const [draftUrl, setDraftUrl] = useState("");
-  const cols = colsForSize(module.size);
+  const cols = colsForSize(module.size, mobile);
 
   const openEdit = (item: ShortcutItem) => {
     setEditing(item);
@@ -89,7 +92,7 @@ export function ShortcutsModuleView({
                 href={item.url || undefined}
                 target="_blank"
                 rel="noreferrer"
-                className="flex flex-col items-center gap-1.5 rounded-2xl px-2 py-3 text-center transition-colors hover:bg-white/50"
+                className="flex min-h-16 flex-col items-center gap-1.5 rounded-2xl px-2 py-3 text-center transition-colors hover:bg-white/50"
                 onClick={(e) => {
                   if (arrangeMode || !item.url || item.url === "https://") {
                     e.preventDefault();
