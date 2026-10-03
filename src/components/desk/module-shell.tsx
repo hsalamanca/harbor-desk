@@ -8,6 +8,11 @@ import { ShortcutsModuleView } from "@/components/modules/shortcuts-module";
 import { HeadlinesModuleView } from "@/components/modules/headlines-module";
 import { ScratchpadModuleView } from "@/components/modules/scratchpad-module";
 import { FocusModuleView } from "@/components/modules/focus-module";
+import { WeatherModuleView } from "@/components/modules/weather-module";
+import { CalendarModuleView } from "@/components/modules/calendar-module";
+import { FoldersModuleView } from "@/components/modules/folders-module";
+import { QuoteModuleView } from "@/components/modules/quote-module";
+import { isProSuiteModule } from "@/lib/pro-suite";
 
 export function ModuleShell({
   module,
@@ -98,7 +103,14 @@ export function ModuleShell({
         onPointerUp={arrangeMode ? endDrag : undefined}
         onPointerCancel={arrangeMode ? endDrag : undefined}
       >
-        <h2 className="module-label">{MODULE_LABELS[module.type]}</h2>
+        <h2 className="module-label">
+          {MODULE_LABELS[module.type]}
+          {isProSuiteModule(module.type) && (
+            <span className="ml-2 font-sans text-[9px] tracking-[0.14em] text-[var(--harbor-teal-deep)]/80">
+              Suite
+            </span>
+          )}
+        </h2>
         {arrangeMode && (
           <div className="flex items-center gap-1" data-no-drag>
             <button
@@ -151,6 +163,22 @@ export function ModuleShell({
             onChangeItems={(items) => onPatch({ items })}
           />
         )}
+        {module.type === "weather" && (
+          <WeatherModuleView
+            module={module}
+            arrangeMode={arrangeMode}
+            onChangePlace={(place) => onPatch({ place })}
+          />
+        )}
+        {module.type === "calendar" && <CalendarModuleView />}
+        {module.type === "folders" && (
+          <FoldersModuleView
+            module={module}
+            arrangeMode={arrangeMode}
+            onChangeFolders={(folders) => onPatch({ folders })}
+          />
+        )}
+        {module.type === "quote" && <QuoteModuleView />}
       </div>
       {arrangeMode && (
         <button
