@@ -5,6 +5,7 @@ import { Cloud, CloudRain, CloudSun, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import type { WeatherModule } from "@/lib/types";
+import { DEFAULT_WEATHER_PLACE } from "@/lib/weather/place";
 
 type WeatherPayload = {
   place: string;
@@ -13,6 +14,13 @@ type WeatherPayload = {
   icon: string;
   windMph: number;
   humidity: number;
+  source?: string;
+};
+
+type WeatherErrorPayload = {
+  error: true;
+  message: string;
+  code?: string;
 };
 
 function WeatherIcon({ icon }: { icon: string }) {
@@ -35,17 +43,20 @@ export function WeatherModuleView({
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [refreshing, setRefreshing] = useState(false);
   const [data, setData] = useState<WeatherPayload | null>(null);
-  const [draftPlace, setDraftPlace] = useState(module.place || "Harbor City");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [draftPlace, setDraftPlace] = useState(
+    module.place || DEFAULT_WEATHER_PLACE
+  );
   const requestId = useRef(0);
   const hasDataRef = useRef(false);
-  const committedPlace = useRef(module.place || "Harbor City");
+  const committedPlace = useRef(module.place || DEFAULT_WEATHER_PLACE);
   const inputFocused = useRef(false);
 
   // Sync draft from outside (import / reset) only when not mid-edit.
   useEffect(() => {
     if (inputFocused.current) return;
     if (module.place !== committedPlace.current) {
-      committedPlace.current = module.place || "Harbor City";
+      committedPlace.current = module.place || DEFAULT_WEATHER_PLACE;
       setDraftPlace(committedPlace.current);
     }
   }, [module.place]);
@@ -55,18 +66,29 @@ export function WeatherModuleView({
     // Soft refresh keeps the location input mounted so edits aren't wiped.
     if (hasDataRef.current) setRefreshing(true);
     else setStatus("loading");
+    setErrorMessage(null);
     try {
       const res = await fetch(
-        `/api/weather?place=${encodeURIComponent(place || "Harbor City")}`
+        `/api/weather?place=${encodeURIComponent(place || DEFAULT_WEATHER_PLACE)}`
       );
-      if (!res.ok) throw new Error("fail");
-      const payload = (await res.json()) as WeatherPayload;
+      const body = (await res.json()) as WeatherPayload | WeatherErrorPayload;
       if (id !== requestId.current) return;
-      setData(payload);
+      if (!res.ok || ("error" in body && body.error)) {
+        const message =
+          "error" in body && body.message
+            ? body.message
+            : "Weather couldn’t load.";
+        setErrorMessage(message);
+        if (!hasDataRef.current) setStatus("error");
+        else setStatus("ready");
+        return;
+      }
+      setData(body as WeatherPayload);
       hasDataRef.current = true;
       setStatus("ready");
     } catch {
       if (id !== requestId.current) return;
+      setErrorMessage("Weather couldn’t load.");
       if (!hasDataRef.current) setStatus("error");
     } finally {
       if (id === requestId.current) setRefreshing(false);
@@ -74,11 +96,11 @@ export function WeatherModuleView({
   }, []);
 
   useEffect(() => {
-    void load(module.place || "Harbor City");
+    void load(module.place || DEFAULT_WEATHER_PLACE);
   }, [load, module.place]);
 
   const commitPlace = () => {
-    const next = draftPlace.trim() || "Harbor City";
+    const next = draftPlace.trim() || DEFAULT_WEATHER_PLACE;
     if (next !== draftPlace) setDraftPlace(next);
     if (next === committedPlace.current) return;
     committedPlace.current = next;
@@ -97,10 +119,29 @@ export function WeatherModuleView({
 
   if (status === "error" && !data) {
     return (
-      <div className="flex h-full flex-col justify-center gap-3">
-        <p className="text-sm text-[var(--harbor-ink-muted)]">
-          Weather couldn’t load.
-        </p>
+      <div className="flex h-full flex-col justify-between gap-3">
+        <div className="space-y-2">
+          <p className="text-sm text-[var(--harbor-ink-muted)]">
+            {errorMessage || "Weather couldn’t load."}
+          </p>
+          <Input
+            value={draftPlace}
+            onChange={(e) => setDraftPlace(e.target.value)}
+            onFocus={() => {
+              inputFocused.current = true;
+            }}
+            onBlur={() => {
+              inputFocused.current = false;
+              commitPlace();
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") e.currentTarget.blur();
+            }}
+            aria-label="Weather location"
+            className="h-8 border-0 bg-white/55 text-sm text-[var(--harbor-ink)] shadow-none focus-visible:ring-[var(--harbor-teal)]"
+            placeholder="City, ST"
+          />
+        </div>
         <Button
           size="sm"
           onClick={() => void load(draftPlace)}
@@ -148,9 +189,15 @@ export function WeatherModuleView({
           className="h-8 border-0 bg-white/55 text-sm text-[var(--harbor-ink)] shadow-none focus-visible:ring-[var(--harbor-teal)]"
           placeholder="City, ST"
         />
-        <p className="text-[11px] text-[var(--harbor-ink-muted)]">
-          wind {data!.windMph} mph · {data!.humidity}% humidity
-        </p>
+        {errorMessage ? (
+          <p className="text-[11px] text-red-700/80" role="alert">
+            {errorMessage}
+          </p>
+        ) : (
+          <p className="text-[11px] text-[var(--harbor-ink-muted)]">
+            wind {data!.windMph} mph · {data!.humidity}% humidity
+          </p>
+        )}
       </div>
     </div>
   );
