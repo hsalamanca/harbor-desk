@@ -27,7 +27,7 @@ export function NowModuleView({
 
   return (
     <div className="flex h-full flex-col justify-end px-0.5 pb-1">
-      <p className="font-display text-[3.35rem] leading-none tracking-[-0.03em] text-[var(--harbor-ink)] tabular-nums sm:text-[3.75rem]">
+      <p className="font-display text-[2.85rem] leading-none tracking-[-0.03em] text-[var(--harbor-ink)] tabular-nums sm:text-[3.75rem]">
         {formatClock(now)}
       </p>
       <p className="mt-3 text-[0.95rem] font-medium tracking-[-0.01em] text-[var(--harbor-ink-muted)]">

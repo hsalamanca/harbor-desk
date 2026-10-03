@@ -1,7 +1,12 @@
 "use client";
 
-import { useRef, useState, type PointerEvent as ReactPointerEvent } from "react";
-import { Maximize2, X } from "lucide-react";
+import {
+  useRef,
+  useState,
+  type CSSProperties,
+  type PointerEvent as ReactPointerEvent,
+} from "react";
+import { ChevronDown, ChevronUp, Maximize2, X } from "lucide-react";
 import { MODULE_LABELS, SIZE_PRESETS, type DeskModule } from "@/lib/types";
 import { NowModuleView } from "@/components/modules/now-module";
 import { ShortcutsModuleView } from "@/components/modules/shortcuts-module";
@@ -14,13 +19,19 @@ import { FoldersModuleView } from "@/components/modules/folders-module";
 import { QuoteModuleView } from "@/components/modules/quote-module";
 import { isProSuiteModule } from "@/lib/pro-suite";
 
+export type DeskLayoutMode = "canvas" | "stack";
+
 export function ModuleShell({
   module,
   arrangeMode,
+  layout,
   index,
+  stackIndex,
+  stackCount,
   storageError,
   onBringToFront,
   onMove,
+  onReorder,
   onCycleSize,
   onRemove,
   onPatch,
@@ -28,16 +39,21 @@ export function ModuleShell({
 }: {
   module: DeskModule;
   arrangeMode: boolean;
+  layout: DeskLayoutMode;
   index: number;
+  stackIndex: number;
+  stackCount: number;
   storageError: boolean;
   onBringToFront: () => void;
   onMove: (x: number, y: number, free: boolean) => void;
+  onReorder: (direction: -1 | 1) => void;
   onCycleSize: () => void;
   onRemove: () => void;
   onPatch: (patch: Partial<DeskModule>) => void;
   onDragActive: (active: boolean) => void;
 }) {
   const size = SIZE_PRESETS[module.type][module.size];
+  const stacked = layout === "stack";
   const drag = useRef<{
     ox: number;
     oy: number;
@@ -48,6 +64,7 @@ export function ModuleShell({
   const [lifting, setLifting] = useState(false);
 
   const onPointerDown = (e: ReactPointerEvent<HTMLDivElement>) => {
+    if (stacked) return;
     if ((e.target as HTMLElement).closest("[data-no-drag]")) return;
     e.currentTarget.setPointerCapture(e.pointerId);
     drag.current = {
@@ -63,7 +80,7 @@ export function ModuleShell({
   };
 
   const onPointerMove = (e: ReactPointerEvent<HTMLDivElement>) => {
-    if (!drag.current) return;
+    if (!drag.current || stacked) return;
     const dx = e.clientX - drag.current.ox;
     const dy = e.clientY - drag.current.oy;
     onMove(
@@ -80,28 +97,39 @@ export function ModuleShell({
     onDragActive(false);
   };
 
-  return (
-    <article
-      className={`module-plane absolute flex flex-col ${
-        module.type === "now" ? "module-now" : ""
-      } ${lifting ? "module-lifting" : ""}`}
-      style={{
+  const style: CSSProperties = stacked
+    ? {
+        ["--stack-min-h" as string]: `${Math.min(size.h, 280)}px`,
+        animationDelay: `${60 + index * 70}ms`,
+      }
+    : {
         left: module.x,
         top: module.y,
         width: size.w,
         height: size.h,
         zIndex: module.z,
         animationDelay: `${80 + index * 90}ms`,
-      }}
+      };
+
+  return (
+    <article
+      className={`module-plane flex flex-col ${
+        stacked ? "module-stacked" : "absolute"
+      } ${module.type === "now" ? "module-now" : ""} ${
+        lifting ? "module-lifting" : ""
+      }`}
+      style={style}
     >
       <div
-        className={`flex items-center justify-between gap-2 px-5 pt-4 ${
-          arrangeMode ? "cursor-grab active:cursor-grabbing" : "cursor-default"
+        className={`flex items-center justify-between gap-2 px-4 pt-4 sm:px-5 ${
+          arrangeMode && !stacked
+            ? "cursor-grab active:cursor-grabbing"
+            : "cursor-default"
         }`}
-        onPointerDown={arrangeMode ? onPointerDown : undefined}
-        onPointerMove={arrangeMode ? onPointerMove : undefined}
-        onPointerUp={arrangeMode ? endDrag : undefined}
-        onPointerCancel={arrangeMode ? endDrag : undefined}
+        onPointerDown={arrangeMode && !stacked ? onPointerDown : undefined}
+        onPointerMove={arrangeMode && !stacked ? onPointerMove : undefined}
+        onPointerUp={arrangeMode && !stacked ? endDrag : undefined}
+        onPointerCancel={arrangeMode && !stacked ? endDrag : undefined}
       >
         <h2 className="module-label">
           {MODULE_LABELS[module.type]}
@@ -113,11 +141,33 @@ export function ModuleShell({
         </h2>
         {arrangeMode && (
           <div className="flex items-center gap-1" data-no-drag>
+            {stacked && (
+              <>
+                <button
+                  type="button"
+                  aria-label="Move module up"
+                  disabled={stackIndex <= 0}
+                  onClick={() => onReorder(-1)}
+                  className="touch-target flex items-center justify-center rounded-md text-[var(--harbor-ink-muted)] hover:bg-[var(--harbor-wash)] hover:text-[var(--harbor-ink)] disabled:opacity-30"
+                >
+                  <ChevronUp className="size-4" />
+                </button>
+                <button
+                  type="button"
+                  aria-label="Move module down"
+                  disabled={stackIndex >= stackCount - 1}
+                  onClick={() => onReorder(1)}
+                  className="touch-target flex items-center justify-center rounded-md text-[var(--harbor-ink-muted)] hover:bg-[var(--harbor-wash)] hover:text-[var(--harbor-ink)] disabled:opacity-30"
+                >
+                  <ChevronDown className="size-4" />
+                </button>
+              </>
+            )}
             <button
               type="button"
               aria-label="Cycle size"
               onClick={onCycleSize}
-              className="flex size-6 items-center justify-center rounded-md text-[var(--harbor-ink-muted)] hover:bg-[var(--harbor-wash)] hover:text-[var(--harbor-ink)]"
+              className="touch-target flex items-center justify-center rounded-md text-[var(--harbor-ink-muted)] hover:bg-[var(--harbor-wash)] hover:text-[var(--harbor-ink)]"
             >
               <Maximize2 className="size-3.5" />
             </button>
@@ -125,14 +175,18 @@ export function ModuleShell({
               type="button"
               aria-label="Remove module"
               onClick={onRemove}
-              className="flex size-6 items-center justify-center rounded-md text-[var(--harbor-ink-muted)] hover:bg-[var(--harbor-wash)] hover:text-red-600"
+              className="touch-target flex items-center justify-center rounded-md text-[var(--harbor-ink-muted)] hover:bg-[var(--harbor-wash)] hover:text-red-600"
             >
               <X className="size-3.5" />
             </button>
           </div>
         )}
       </div>
-      <div className="min-h-0 flex-1 overflow-auto px-5 pb-5 pt-2">
+      <div
+        className={`min-h-0 flex-1 overflow-auto px-4 pb-4 pt-2 sm:px-5 sm:pb-5 ${
+          stacked ? "module-stacked-body" : ""
+        }`}
+      >
         {module.type === "now" && (
           <NowModuleView
             module={module}
@@ -180,7 +234,7 @@ export function ModuleShell({
         )}
         {module.type === "quote" && <QuoteModuleView />}
       </div>
-      {arrangeMode && (
+      {arrangeMode && !stacked && (
         <button
           type="button"
           aria-label="Resize module"
