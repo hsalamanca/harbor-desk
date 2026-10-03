@@ -7,7 +7,8 @@ A calm browser start page: a freeform soft-grid desk over scenic landscapes, whe
 - Next.js (App Router) + TypeScript
 - Tailwind CSS + shadcn/ui
 - Hourly + premium landscapes (hosted scenic photography)
-- Mock APIs for headlines, weather, calendar, and quotes
+- Live Open-Meteo weather (Houston, TX by default) + mock headlines/calendar/quotes
+- Responsive phone stack + desktop freeform soft-grid
 - `localStorage` for layout and personal content (no auth, no database)
 
 ## Modules
@@ -49,7 +50,8 @@ Optional: `?hour=20` forces the hourly scene slot while in auto mode.
 ## Using the desk
 
 1. First visit loads a carefully composed default desk (including Suite modules).
-2. Toggle **Arrange** to drag modules (24px soft-grid snap; hold Alt for free placement), cycle sizes, and edit content.
-3. Use **Scenes** and **Presets** anytime — chrome stays quiet otherwise.
+2. **Desktop:** toggle **Arrange** to drag modules (24px soft-grid snap; hold Alt for free placement), cycle sizes, and edit content.
+3. **Phone:** the desk becomes a stacked, scrollable column (not a shrunk canvas). In Arrange mode, reorder with up/down, resize, add, and remove — Scenes and Presets stay reachable with large touch targets.
+4. Use **Scenes** and **Presets** anytime — chrome stays quiet otherwise.
 
-Layout and content persist in `localStorage` under `harbor-desk-v3`.
+Layout and content persist in `localStorage` under `harbor-desk-v3`. Safe-area insets are respected on notched phones; landscapes stay full-bleed behind the stack.

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Barlow_Condensed, Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -22,6 +22,18 @@ export const metadata: Metadata = {
   title: "Harbor Desk",
   description:
     "A calm freeform start page — time, shortcuts, headlines, notes, and focus on a soft-grid desk.",
+  appleWebApp: {
+    capable: true,
+    title: "Harbor Desk",
+    statusBarStyle: "black-translucent",
+  },
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#0b121a",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -30,7 +42,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} ${barlowDisplay.variable} h-full antialiased`}
     >
-      <body className="min-h-full font-sans">{children}</body>
+      <body className="min-h-full overflow-x-hidden font-sans">{children}</body>
     </html>
   );
 }
