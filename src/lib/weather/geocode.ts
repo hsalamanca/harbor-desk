@@ -32,7 +32,7 @@ type OpenMeteoGeocodeResponse = {
 
 export class PlaceNotFoundError extends Error {
   constructor(place: string) {
-    super(`Couldn\u2019t find \u201c${place}\u201d. Try City, ST \u2014 e.g. Houston, TX.`);
+    super(`Couldn’t find “${place}”. Try City, ST — e.g. Houston, TX.`);
     this.name = "PlaceNotFoundError";
   }
 }
@@ -67,6 +67,7 @@ export function pickGeocodeResult(
       wanted &&
       best.admin1 &&
       best.admin1.toLowerCase() !== wanted &&
+      // Prefer an exact admin1 match when the top hit is elsewhere.
       ranked.some((r) => r.admin1?.toLowerCase() === wanted)
     ) {
       return ranked.find((r) => r.admin1?.toLowerCase() === wanted) ?? best;
@@ -101,6 +102,7 @@ export async function geocodePlace(
     throw new PlaceNotFoundError(parsed.raw);
   }
 
+  // When user asked for a specific US state and nothing matched, fail clearly.
   if (parsed.region) {
     const wanted = expandUsRegion(parsed.region)?.toLowerCase();
     if (
