@@ -171,9 +171,9 @@ export const SIZE_PRESETS: Record<
     wide: { w: 408, h: 280 },
   },
   weather: {
-    compact: { w: 264, h: 200 },
-    comfortable: { w: 312, h: 216 },
-    wide: { w: 360, h: 216 },
+    compact: { w: 288, h: 248 },
+    comfortable: { w: 336, h: 292 },
+    wide: { w: 384, h: 312 },
   },
   calendar: {
     compact: { w: 312, h: 240 },
@@ -198,7 +198,7 @@ export const SIZE_CYCLE: Record<ModuleType, SizePreset[]> = {
   headlines: ["compact", "comfortable"],
   scratchpad: ["compact", "comfortable"],
   focus: ["compact", "comfortable"],
-  weather: ["compact", "comfortable"],
+  weather: ["compact", "comfortable", "wide"],
   calendar: ["compact", "comfortable"],
   folders: ["compact", "comfortable", "wide"],
   quote: ["compact", "comfortable"],
