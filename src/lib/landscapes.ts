@@ -2,95 +2,181 @@ export type LandscapeScene = {
   id: string;
   src: string;
   label: string;
+  pack: "hourly" | "premium";
   /** Soft wash tint over the photo for readability */
   wash: string;
 };
 
-/**
- * 12 curated scenes — each covers two clock hours.
- * Hosted via Picsum (stable Unsplash IDs) so the desk loads without bundling megabytes of JPEGs.
- * Mapping preset: hourly-v1
- */
+const coolWash =
+  "linear-gradient(180deg, rgba(16,28,44,0.48) 0%, rgba(16,28,44,0.18) 50%, rgba(12,22,34,0.45) 100%)";
+const nightWash =
+  "linear-gradient(180deg, rgba(8,14,24,0.55) 0%, rgba(8,14,24,0.28) 45%, rgba(8,14,24,0.5) 100%)";
+const dawnWash =
+  "linear-gradient(180deg, rgba(32,36,48,0.42) 0%, rgba(40,44,52,0.18) 50%, rgba(28,34,44,0.4) 100%)";
+
+/** 12 hourly scenes — auto rotation (two hours each). */
 export const HOURLY_LANDSCAPES: LandscapeScene[] = [
   {
-    id: "00",
+    id: "h-00",
     src: "https://picsum.photos/id/29/1920/1280",
     label: "Night overlook",
-    wash: "linear-gradient(180deg, rgba(8,14,24,0.55) 0%, rgba(8,14,24,0.28) 45%, rgba(8,14,24,0.5) 100%)",
+    pack: "hourly",
+    wash: nightWash,
   },
   {
-    id: "02",
+    id: "h-02",
     src: "https://picsum.photos/id/84/1920/1280",
     label: "Still water night",
-    wash: "linear-gradient(180deg, rgba(10,16,28,0.52) 0%, rgba(10,16,28,0.25) 50%, rgba(10,16,28,0.48) 100%)",
+    pack: "hourly",
+    wash: nightWash,
   },
   {
-    id: "04",
+    id: "h-04",
     src: "https://picsum.photos/id/96/1920/1280",
     label: "Pre-dawn hush",
-    wash: "linear-gradient(180deg, rgba(18,28,42,0.48) 0%, rgba(18,28,42,0.22) 48%, rgba(18,28,42,0.42) 100%)",
+    pack: "hourly",
+    wash: dawnWash,
   },
   {
-    id: "06",
+    id: "h-06",
     src: "https://picsum.photos/id/1016/1920/1280",
     label: "First ridgeline",
-    wash: "linear-gradient(180deg, rgba(32,36,48,0.42) 0%, rgba(40,44,52,0.18) 50%, rgba(28,34,44,0.4) 100%)",
+    pack: "hourly",
+    wash: dawnWash,
   },
   {
-    id: "08",
+    id: "h-08",
     src: "https://picsum.photos/id/1036/1920/1280",
     label: "Morning mist",
-    wash: "linear-gradient(180deg, rgba(36,48,58,0.4) 0%, rgba(36,48,58,0.16) 52%, rgba(30,40,50,0.38) 100%)",
+    pack: "hourly",
+    wash: coolWash,
   },
   {
-    id: "10",
+    id: "h-10",
     src: "https://picsum.photos/id/1015/1920/1280",
     label: "Coastal morning",
-    wash: "linear-gradient(180deg, rgba(28,44,58,0.38) 0%, rgba(28,44,58,0.14) 50%, rgba(24,38,52,0.36) 100%)",
+    pack: "hourly",
+    wash: coolWash,
   },
   {
-    id: "12",
+    id: "h-12",
     src: "https://picsum.photos/id/1018/1920/1280",
     label: "Open midday",
-    wash: "linear-gradient(180deg, rgba(24,40,52,0.36) 0%, rgba(24,40,52,0.12) 52%, rgba(20,34,46,0.34) 100%)",
+    pack: "hourly",
+    wash: coolWash,
   },
   {
-    id: "14",
+    id: "h-14",
     src: "https://picsum.photos/id/1019/1920/1280",
     label: "Afternoon range",
-    wash: "linear-gradient(180deg, rgba(30,42,52,0.38) 0%, rgba(30,42,52,0.14) 50%, rgba(26,38,48,0.36) 100%)",
+    pack: "hourly",
+    wash: coolWash,
   },
   {
-    id: "16",
+    id: "h-16",
     src: "https://picsum.photos/id/1043/1920/1280",
     label: "Late day paths",
-    wash: "linear-gradient(180deg, rgba(36,40,48,0.4) 0%, rgba(36,40,48,0.16) 50%, rgba(30,36,44,0.4) 100%)",
+    pack: "hourly",
+    wash: dawnWash,
   },
   {
-    id: "18",
+    id: "h-18",
     src: "https://picsum.photos/id/1044/1920/1280",
     label: "Golden ridges",
-    wash: "linear-gradient(180deg, rgba(40,36,40,0.42) 0%, rgba(40,36,40,0.16) 50%, rgba(32,34,40,0.42) 100%)",
+    pack: "hourly",
+    wash: dawnWash,
   },
   {
-    id: "20",
+    id: "h-20",
     src: "https://picsum.photos/id/1050/1920/1280",
     label: "Blue hour shore",
-    wash: "linear-gradient(180deg, rgba(16,28,44,0.5) 0%, rgba(16,28,44,0.22) 48%, rgba(14,24,38,0.48) 100%)",
+    pack: "hourly",
+    wash: coolWash,
   },
   {
-    id: "22",
+    id: "h-22",
     src: "https://picsum.photos/id/110/1920/1280",
     label: "Evening water",
-    wash: "linear-gradient(180deg, rgba(12,20,34,0.52) 0%, rgba(12,20,34,0.24) 48%, rgba(10,18,30,0.5) 100%)",
+    pack: "hourly",
+    wash: nightWash,
   },
 ];
 
-export const LANDSCAPE_PRESET = "hourly-v1";
+/** Extra premium scenic pack — available in the manual picker. */
+export const PREMIUM_LANDSCAPES: LandscapeScene[] = [
+  {
+    id: "p-fjord",
+    src: "https://picsum.photos/id/122/1920/1280",
+    label: "Fjord glass",
+    pack: "premium",
+    wash: coolWash,
+  },
+  {
+    id: "p-pine",
+    src: "https://picsum.photos/id/128/1920/1280",
+    label: "Pine edge",
+    pack: "premium",
+    wash: coolWash,
+  },
+  {
+    id: "p-harbor",
+    src: "https://picsum.photos/id/133/1920/1280",
+    label: "Harbor steel",
+    pack: "premium",
+    wash: nightWash,
+  },
+  {
+    id: "p-dune",
+    src: "https://picsum.photos/id/142/1920/1280",
+    label: "Cool dunes",
+    pack: "premium",
+    wash: dawnWash,
+  },
+  {
+    id: "p-pass",
+    src: "https://picsum.photos/id/146/1920/1280",
+    label: "Mountain pass",
+    pack: "premium",
+    wash: coolWash,
+  },
+  {
+    id: "p-lake",
+    src: "https://picsum.photos/id/160/1920/1280",
+    label: "Mirror lake",
+    pack: "premium",
+    wash: coolWash,
+  },
+  {
+    id: "p-cliff",
+    src: "https://picsum.photos/id/164/1920/1280",
+    label: "Sea cliff",
+    pack: "premium",
+    wash: coolWash,
+  },
+  {
+    id: "p-mist",
+    src: "https://picsum.photos/id/183/1920/1280",
+    label: "Valley mist",
+    pack: "premium",
+    wash: dawnWash,
+  },
+];
+
+export const ALL_LANDSCAPES: LandscapeScene[] = [
+  ...HOURLY_LANDSCAPES,
+  ...PREMIUM_LANDSCAPES,
+];
+
+export const LANDSCAPE_PRESET = "hourly-v1+premium";
 
 export function sceneForHour(hour: number): LandscapeScene {
   const slot = Math.floor((((hour % 24) + 24) % 24) / 2);
   return HOURLY_LANDSCAPES[slot] ?? HOURLY_LANDSCAPES[0];
+}
+
+export function sceneById(id: string | null | undefined): LandscapeScene | null {
+  if (!id) return null;
+  return ALL_LANDSCAPES.find((s) => s.id === id) ?? null;
 }
 
 export function preloadLandscape(src: string) {
